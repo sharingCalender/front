@@ -7,7 +7,10 @@ spring:
 
   config:
     import: optional:configserver:http://${username}:${password}@localhost:9000
-
+  jwt:
+    token:
+      access-expiration-time: 600
+      refresh-expiration-time: 1200
 server:
   port: 8580
 
