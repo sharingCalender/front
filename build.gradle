@@ -28,6 +28,8 @@ ext {
 }
 
 dependencies {
+    implementation group: 'org.apache.commons', name: 'commons-lang3'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
