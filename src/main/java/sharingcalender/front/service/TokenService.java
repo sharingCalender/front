@@ -9,4 +9,6 @@ public interface TokenService {
 
     void addTokenToCookie(TokenIssueResponseDto tokenIssueResponseDto,
         HttpServletResponse response);
+
+    void removeTokenFromCookie(HttpServletResponse response);
 }

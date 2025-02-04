@@ -33,12 +33,13 @@ public class RedirectByExceptionAdvice {
                 .getAnnotationsByType(RedirectByException.class);
 
             for (RedirectByException redirectByException : methodAnnotation) {
-                Class<? extends Exception> exception = redirectByException.exception();
-                if (exception.isAssignableFrom(e.getClass())) {
-                    throw new RedirectPageException(redirectByException.redirect(),
-                        redirectByException.title(), e);
+                Class<? extends Exception>[] exception = redirectByException.exception();
+                for (Class<? extends Exception> clazz : exception) {
+                    if (clazz.isAssignableFrom(e.getClass())) {
+                        throw new RedirectPageException(redirectByException.redirect(),
+                            redirectByException.title(), e);
+                    }
                 }
-
             }
 
             throw e;

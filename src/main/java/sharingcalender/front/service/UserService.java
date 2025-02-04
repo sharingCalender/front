@@ -10,4 +10,5 @@ public interface UserService {
 
     TokenIssueResponseDto loginUser(UserLoginRequestDto userLoginRequestDto);
 
+    void logoutUser(String refreshToken);
 }

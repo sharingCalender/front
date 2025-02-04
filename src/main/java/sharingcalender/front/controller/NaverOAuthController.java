@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import sharingcalender.front.adapter.AuthAdapter;
+import sharingcalender.front.annotation.RedirectByException;
 import sharingcalender.front.dto.oauth.request.NaverTokenRequestDto;
 import sharingcalender.front.dto.TokenIssueResponseDto;
+import sharingcalender.front.exception.AuthenticationException;
+import sharingcalender.front.exception.BadRequestException;
+import sharingcalender.front.exception.UnAuthorizedException;
 import sharingcalender.front.service.TokenService;
 import sharingcalender.front.service.impl.NaverServiceImpl;
 
@@ -41,6 +45,12 @@ public class NaverOAuthController {
         return naverService.naverOauthLogin();
     }
 
+    //TODO 로그인 실패페이지로 리디렉션
+    @RedirectByException(
+        exception = {BadRequestException.class, UnAuthorizedException.class,
+            AuthenticationException.class},
+        title = "login fail",
+        redirect = "/login")
     @GetMapping("/callback")
     public String naverGetToken(@RequestParam("code") String code,
         @RequestParam("state") String state, HttpServletResponse response) {

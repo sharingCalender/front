@@ -20,6 +20,8 @@ public class TokenExpirationCheckFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("TokenExpirationCheckFilter===");
+
         Cookie accessToken = WebUtils.getCookie(request, "accessToken");
 
         Cookie refreshToken = WebUtils.getCookie(request, "refreshToken");

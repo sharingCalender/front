@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FullCalendar + Bootstrap 5 (Thymeleaf)</title>
+
+  <!-- ✅ Bootstrap 5 CSS -->
+  <link th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}" rel="stylesheet">
+
+  <!-- ✅ FullCalendar CSS -->
+  <link th:href="@{https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css}" rel="stylesheet">
+
+  <style>
+    /* 캘린더 높이 설정 */
+    #calendar {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      height: 700px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+  <h1 class="text-center text-primary">FullCalendar + Bootstrap 5 (Thymeleaf)</h1>
+  <div id="calendar"></div>
+</div>
+
+<!-- ✅ Bootstrap 5 JS -->
+<script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js}"></script>
+
+<!-- ✅ FullCalendar JS -->
+<script th:src="@{https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+
+    if (!calendarEl) {
+      console.error("❌ 'calendar' ID를 가진 div가 없음!");
+      return;
+    }
+
+    // ✅ FullCalendar 5 버전에서 `FullCalendar.Calendar`가 아닌 `new Calendar`를 사용
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: [
+        {
+          title: '테스트 이벤트',
+          start: '2025-02-10',
+          end: '2025-02-12'
+        }
+      ]
+    });
+
+    calendar.render();
+  });
+</script>
+
+</body>
+</html>

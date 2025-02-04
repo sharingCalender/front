@@ -28,4 +28,22 @@ public class TokenUtil {
 
     }
 
+    public static void removeTokenFromCookie(HttpServletResponse response) {
+
+        Cookie accessToken = new Cookie("accessToken", null);
+        accessToken.setHttpOnly(true);
+        accessToken.setSecure(true);
+        accessToken.setPath("/");
+        accessToken.setMaxAge(0);
+        response.addCookie(accessToken);
+
+        Cookie refreshToken = new Cookie("refreshToken", null);
+        refreshToken.setHttpOnly(true);
+        refreshToken.setSecure(true);
+        refreshToken.setPath("/");
+        refreshToken.setMaxAge(0);
+        response.addCookie(refreshToken);
+
+    }
+
 }

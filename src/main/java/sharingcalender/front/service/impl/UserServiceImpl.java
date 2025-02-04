@@ -18,23 +18,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerUser(UserRegisterRequestDto userRegisterRequestDto) {
-        try {
-            userAdapter.registerUser(userRegisterRequestDto);
 
-        } catch (Exception e) {
-
-        }
+        userAdapter.registerUser(userRegisterRequestDto);
     }
 
     public TokenIssueResponseDto loginUser(UserLoginRequestDto userLoginRequestDto) {
-        try {
-            ResponseEntity<TokenIssueResponseDto> tokenIssueResponse = userAdapter.loginUser(
-                userLoginRequestDto);
 
-            return tokenIssueResponse.getBody();
+        ResponseEntity<TokenIssueResponseDto> tokenIssueResponse = userAdapter.loginUser(
+            userLoginRequestDto);
 
-        } catch (Exception e) {
-            return null;
-        }
+        return tokenIssueResponse.getBody();
+
+    }
+
+
+    public void logoutUser(String refreshToken) {
+
+        userAdapter.logoutUser("Bearer " + refreshToken);
+
     }
 }

@@ -14,8 +14,6 @@ public class NaverServiceImpl {
 
     private final AuthAdapter authAdapter;
 
-    //TODO feing Client 예외처리..
-
     public String naverOauthLogin() {
 
         ResponseEntity<Map<String, String>> response = authAdapter.naverOauthLogin();

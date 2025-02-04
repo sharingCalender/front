@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Repeatable(RedirectByExceptionContainer.class)
 public @interface RedirectByException {
 
-    Class<? extends Exception> exception();
+    Class<? extends Exception>[] exception();
 
     String title();
 

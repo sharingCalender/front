@@ -43,4 +43,8 @@ public class TokenServiceImpl implements TokenService {
         TokenUtil.addTokenToCookie(tokenIssueResponseDto, response, accessExpirationTime,
             refreshExpirationTime);
     }
+
+    public void removeTokenFromCookie(HttpServletResponse response) {
+        TokenUtil.removeTokenFromCookie(response);
+    }
 }
