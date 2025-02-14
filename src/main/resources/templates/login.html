@@ -1,10 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org"
+>
+
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <title>BeOne - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Custom styles for this template-->
+    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        .naver-login-btn img {
+            width: 150px; /* 원하는 너비 설정 */
+            height: auto; /* 비율 유지 */
+            display: block;
+            margin: 0 auto; /* 가운데 정렬 (선택사항) */
+        }
+    </style>
+
 </head>
-<body>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">BeOne - 로그인을 해주세요</h1>
+                                    </div>
+                                    <form class="user" id="login-form">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-user"
+                                                id="login-id" aria-describedby="emailHelp"
+                                                placeholder="Id" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user"
+                                                id="login-password" placeholder="Password" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            Login
+                                        </button>
+                                        <hr>
+                                        <a href="/oauth/naver/login" class="naver-login-btn">
+                                            <img src="/img/naver_login.png" alt="네이버로 로그인">
+                                        </a>
+
+                                    </form>
+                                    <hr>
+                                    <div class="text-center">
+                                        <a class="small" href="/user/register">Create an Account!</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="/js/sb-admin-2.min.js"></script>
+
+
+    <script th:inline="javascript">
+        const _csrf = document.querySelector(`meta[name="_csrf"]`).getAttribute('content');
+        const _csrf_header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        document.getElementById("login-form").addEventListener("submit",function (event) {
+            event.preventDefault();
+
+            const loginId = document.getElementById("login-id").value;
+            const password =  document.getElementById("login-password").value;
+
+            if (!loginId){
+                alert("id 를 입력해주세요");
+                return;
+            }
+
+            if (!password){
+                alert("password 를 입력해주세요")
+            }
+            const formData = {
+                username: loginId,
+                password: password
+            }
+
+
+            fetch("/user/login",{
+                method: 'POST',
+                headers: {'Content-Type':'application/json', [_csrf_header]: _csrf},
+                body: JSON.stringify(formData),
+            })
+            .then((response) =>{
+                if (response.ok) {
+                    console.log("login  response is ok")
+                    window.location.href="/";
+                } else  {
+                    throw new Error("로그인에 실패했습니다. 다시 시도해주세요.");
+                }
+            })
+            .catch((error) => {
+                alert(error.message);
+            })
+
+        })
+    </script>
 
 </body>
+
 </html>

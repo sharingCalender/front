@@ -1,14 +1,8 @@
 package sharingcalender.front.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.Duration;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +34,8 @@ public class NaverOAuthController {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private long refreshExpirationTime;
 
+
+
     @GetMapping("/login")
     public String naverOauthLogin() {
         return naverService.naverOauthLogin();
@@ -62,7 +58,7 @@ public class NaverOAuthController {
         // 여기서 쿠키에 넣어서 응답하면 될 거 같다.
         tokenService.addTokenToCookie(tokenResponse, response);
 
-        return "test";
+        return "redirect:/";
 
     }
 

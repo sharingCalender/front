@@ -2,8 +2,10 @@ spring:
   application:
     name: front-service
 
+
   profiles:
     active: dev
+
 
   config:
     import: optional:configserver:http://${username}:${password}@localhost:9000

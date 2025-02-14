@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import sharingcalender.front.config.FeignClientConfig;
-import sharingcalender.front.dto.TokenReissueRequestDto;
 import sharingcalender.front.dto.oauth.request.NaverTokenRequestDto;
 import sharingcalender.front.dto.TokenIssueResponseDto;
 

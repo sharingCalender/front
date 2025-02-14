@@ -1,0 +1,46 @@
+<div id="topbarTemplate">
+<nav class="sb-topnav navbar navbar-expand navbar-light" style="background-color: #4169e1;">
+  <!-- Navbar Brand-->
+  <a class="navbar-brand ps-3" href="/">BeOne</a>
+  <!-- Sidebar Toggle-->
+  <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" ><i class="fas fa-bars"></i></button>
+
+  <!-- Navbar-->
+  <div class="collapse navbar-collapse justify-content-end">
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <li><a class="dropdown-item" href="#!">message</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><button id="logout" class="dropdown-item" >Logout</button></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+  <script th:inline="javascript">
+    document.getElementById("logout").addEventListener("click", function (event) {
+      event.preventDefault();
+
+      console.log("로그아웃 시도")
+      fetch("/user/logout",{
+        method: 'POST',
+        headers: {'Content-Type':'application/json', [_csrf_header]: _csrf}
+      })
+      .then((response) =>{
+        if (response.ok) {
+          window.location.href="/user/login";
+        } else {
+          throw new Error("로그아웃 중 문제가 발생했습니다.")
+        }
+      })
+      .catch((error) =>{
+        alert("로그아웃 중 문제가 발생했습니다.");
+        window.location.href="/"
+      })
+    })
+
+  </script>
+
+</div>

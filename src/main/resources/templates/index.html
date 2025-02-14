@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragment/default}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+<head>
+    <title>홈 페이지</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+
+        .center-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="center-text">
+        Welcome , BeOne
+        <br><br>
+        Sharing your schedule
+    </h1>
+
+</div>
+</body>
+</html>

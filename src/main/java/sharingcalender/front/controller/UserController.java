@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import sharingcalender.front.dto.TokenIssueResponseDto;
 import sharingcalender.front.dto.user.request.UserLoginRequestDto;
 import sharingcalender.front.dto.user.request.UserRegisterRequestDto;
 import sharingcalender.front.exception.BadRequestException;
+import sharingcalender.front.exception.ResourceNotFoundException;
 import sharingcalender.front.exception.UnAuthorizedException;
 import sharingcalender.front.service.TokenService;
 import sharingcalender.front.service.UserService;
@@ -31,6 +31,11 @@ public class UserController {
 
     private final UserService userService;
     private final TokenService tokenService;
+
+    @GetMapping("/register")
+    public String registerForm() {
+        return "register";
+    }
 
     // 자바스크립트 fetch 로 요청이 올 것이고 예외가 발생하게 되면 alert 를 띄우지 redirection 은 하지 않을 거 같다.
     @PostMapping("/register")
@@ -52,11 +57,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-//    @GetMapping("/csrf")
-//    public ResponseEntity<CsrfToken> getCsrfToken(HttpServletRequest request) {
-//        return ResponseEntity.status(HttpStatus.OK)
-//            .body((CsrfToken) request.getAttribute(CsrfToken.class.getName()));
-//    }
 
     @GetMapping("/login")
     public String loginPage() {
@@ -64,10 +64,11 @@ public class UserController {
         return "login";
     }
 
-    //TODO 로그인 페이지가 아니라 오류페이지를 만들어서 리디렉션해야할 듯 ex) 로그인에 실패했습니다. 잠시후 다시 시도해주세요
-    @RedirectByException(exception = UnAuthorizedException.class, title = "Login Fail", redirect = "/login")
+
+//    @RedirectByException(exception = {UnAuthorizedException.class, ResourceNotFoundException.class,
+//        BadRequestException.class}, title = "Login Fail", redirect = "/user/login")
     @PostMapping("/login")
-    public String loginUser(@RequestBody UserLoginRequestDto userLoginReq,
+    public ResponseEntity<Void> loginUser(@RequestBody UserLoginRequestDto userLoginReq,
         HttpServletResponse response) {
 
         TokenIssueResponseDto tokenIssueResponse = userService.loginUser(userLoginReq);
@@ -75,13 +76,16 @@ public class UserController {
         // 쿠키에 담아야함..
         tokenService.addTokenToCookie(tokenIssueResponse, response);
 
-        return "test";
+        return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 
-    //TODO 로그아웃시 문제가 발생했습니다. 페이지 띄워야 할 듯? 로그인이랑 같은 페이지 쓰되 메시지만 갈아끼우면 될 듯
-    @RedirectByException(exception = UnAuthorizedException.class, title = "Logout Fail", redirect = "/")
+
+//    @RedirectByException(exception = {UnAuthorizedException.class,
+//        BadRequestException.class}, title = "Logout Fail", redirect = "/")
     @PostMapping("/logout")
-    public String logoutUser(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Void> logoutUser(HttpServletRequest request,
+        HttpServletResponse response) {
 
         Cookie refreshToken = WebUtils.getCookie(request, "refreshToken");
 
@@ -89,11 +93,9 @@ public class UserController {
 
         tokenService.removeTokenFromCookie(response);
 
-        return "login";
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/calendar")
-    public String calendarTest() {
-        return "calendar";
-    }
+
+
 }

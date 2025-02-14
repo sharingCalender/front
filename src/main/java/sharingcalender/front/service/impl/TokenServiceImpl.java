@@ -23,18 +23,13 @@ public class TokenServiceImpl implements TokenService {
     private int refreshExpirationTime;
 
     public void reissueToken(String refreshToken, HttpServletResponse response) {
-        try {
-            ResponseEntity<TokenIssueResponseDto> tokenIssue = authAdapter.reissueToken(
-                "Bearer " + refreshToken);
 
-            // 응답에 addCookie 해야함.
-            TokenUtil.addTokenToCookie(tokenIssue.getBody(), response, accessExpirationTime,
-                refreshExpirationTime);
+        ResponseEntity<TokenIssueResponseDto> tokenIssue = authAdapter.reissueToken(
+            "Bearer " + refreshToken);
 
-        } catch (Exception e) {
-
-        }
-
+        // 응답에 addCookie 해야함.
+        TokenUtil.addTokenToCookie(tokenIssue.getBody(), response, accessExpirationTime,
+            refreshExpirationTime);
     }
 
     public void addTokenToCookie(TokenIssueResponseDto tokenIssueResponseDto,
