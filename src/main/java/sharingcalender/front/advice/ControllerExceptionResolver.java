@@ -13,7 +13,7 @@ public class ControllerExceptionResolver {
 
     @ExceptionHandler(RedirectPageException.class)
     public ModelAndView redirectToErrorPage(RedirectPageException e) {
-        ModelAndView modelAndView = new ModelAndView("/error/redirectErrorPage");
+        ModelAndView modelAndView = new ModelAndView("/error/redirect-error-page");
         modelAndView.addObject("redirect", e.getRedirect());
         modelAndView.addObject("title", e.getTitle());
         modelAndView.addObject("errorMessage", ExceptionUtils.getRootCauseMessage(e));

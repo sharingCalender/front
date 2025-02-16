@@ -14,7 +14,7 @@ import sharingcalender.front.dto.user.request.UserRegisterRequestDto;
 @FeignClient(name = "user-service", url = "${gateway.url}",configuration = FeignClientConfig.class)
 public interface UserAdapter {
 
-    @PostMapping("/api/calender/user/register")
+    @PostMapping("/api/calendar/user/register")
     ResponseEntity<Void> registerUser(@RequestBody UserRegisterRequestDto userRegisterRequestDto);
 
     @PostMapping("/api/auth/login")

@@ -29,6 +29,7 @@ public class FeignClientConfig {
     }
     @Bean
     public CloseableHttpClient closeableHttpClient() {
+
         return HttpClients.createDefault();
     }
 

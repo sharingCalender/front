@@ -16,9 +16,13 @@ import sharingcalender.front.dto.calendar.request.EventChangeColorRequestDto;
 import sharingcalender.front.dto.calendar.request.EventDeleteRequestDto;
 import sharingcalender.front.dto.calendar.request.EventModifyRequestDto;
 import sharingcalender.front.dto.calendar.request.EventRegisterRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationAcceptRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
 import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
+import sharingcalender.front.dto.calendar.response.GroupInvitationInfoListResponseDto;
 
 @FeignClient(name = "calendar-service", url = "${gateway.url}", configuration = FeignClientConfig.class)
 public interface CalendarAdapter {
@@ -54,5 +58,18 @@ public interface CalendarAdapter {
     @DeleteMapping("/api/calendar/event")
     ResponseEntity<Void> deleteEvent(@RequestBody EventDeleteRequestDto eventDeleteRequestDto);
 
+    @GetMapping("/api/calendar/group/invitation")
+    ResponseEntity<GroupInvitationInfoListResponseDto> getInvitationList();
 
+    @PostMapping("/api/calendar/group/invitation")
+    ResponseEntity<Void> saveGroupInvitation(
+        @RequestBody GroupInvitationSaveRequestDto groupInvitationSaveRequestDto);
+
+    @PostMapping("/api/calendar/group/invitation/accept")
+    ResponseEntity<Void> saveWhenInvitationAccepted(
+        @RequestBody GroupInvitationAcceptRequestDto groupInvitationAcceptRequestDto);
+
+    @DeleteMapping("/api/calendar/group/invitation")
+    ResponseEntity<Void> deleteGroupInvitation(
+        @RequestBody GroupInvitationDelRequestDto groupInvitationDelRequestDto);
 }

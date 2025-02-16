@@ -1,5 +1,6 @@
 package sharingcalender.front.service.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,9 +11,13 @@ import sharingcalender.front.dto.calendar.request.EventChangeColorRequestDto;
 import sharingcalender.front.dto.calendar.request.EventDeleteRequestDto;
 import sharingcalender.front.dto.calendar.request.EventModifyRequestDto;
 import sharingcalender.front.dto.calendar.request.EventRegisterRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationAcceptRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
 import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
+import sharingcalender.front.dto.calendar.response.GroupInvitationInfo;
 import sharingcalender.front.service.CalendarService;
 
 @Service
@@ -63,5 +68,22 @@ public class CalendarServiceImpl implements CalendarService {
 
     public void changeEventColor(EventChangeColorRequestDto eventChangeColorRequestDto) {
         calendarAdapter.changeEventColor(eventChangeColorRequestDto);
+    }
+
+    public List<GroupInvitationInfo> getInvitationList() {
+        return calendarAdapter.getInvitationList().getBody().groupInvitationInfoList();
+    }
+
+    public void saveGroupInvitation(GroupInvitationSaveRequestDto groupInvitationSaveRequestDto) {
+        calendarAdapter.saveGroupInvitation(groupInvitationSaveRequestDto);
+    }
+
+    public void saveWhenInvitationAccepted(
+        GroupInvitationAcceptRequestDto groupInvitationAcceptRequestDto) {
+        calendarAdapter.saveWhenInvitationAccepted(groupInvitationAcceptRequestDto);
+    }
+
+    public void deleteGroupInvitation(GroupInvitationDelRequestDto groupInvitationDelRequestDto) {
+        calendarAdapter.deleteGroupInvitation(groupInvitationDelRequestDto);
     }
 }

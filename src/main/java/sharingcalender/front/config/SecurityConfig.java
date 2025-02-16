@@ -22,8 +22,6 @@ public class SecurityConfig {
 
             .csrf(Customizer.withDefaults())
 
-//            .csrf(AbstractHttpConfigurer::disable)
-
             .httpBasic(AbstractHttpConfigurer::disable)
 
             .formLogin(AbstractHttpConfigurer::disable)

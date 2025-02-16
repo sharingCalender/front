@@ -106,15 +106,17 @@
         document.getElementById("login-form").addEventListener("submit",function (event) {
             event.preventDefault();
 
-            const loginId = document.getElementById("login-id").value;
-            const password =  document.getElementById("login-password").value;
 
-            if (!loginId){
+
+            const loginId = document.getElementById("login-id").value;
+            const password = document.getElementById("login-password").value;
+
+            if (!loginId) {
                 alert("id 를 입력해주세요");
                 return;
             }
 
-            if (!password){
+            if (!password) {
                 alert("password 를 입력해주세요")
             }
             const formData = {
@@ -122,17 +124,30 @@
                 password: password
             }
 
+            console.log("test")
 
-            fetch("/user/login",{
+            const btn = this;
+
+            // 기존 버튼 내용 저장
+            const originalText = btn.innerHTML;
+
+            // 버튼 비활성화 + 스피너 추가
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 로그인 중...`;
+            btn.disabled = true;
+
+            fetch("/user/login", {
                 method: 'POST',
-                headers: {'Content-Type':'application/json', [_csrf_header]: _csrf},
+                headers: {'Content-Type': 'application/json', [_csrf_header]: _csrf},
                 body: JSON.stringify(formData),
             })
-            .then((response) =>{
+            .then((response) => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
                 if (response.ok) {
                     console.log("login  response is ok")
-                    window.location.href="/";
-                } else  {
+                    window.location.href = "/";
+                } else {
                     throw new Error("로그인에 실패했습니다. 다시 시도해주세요.");
                 }
             })

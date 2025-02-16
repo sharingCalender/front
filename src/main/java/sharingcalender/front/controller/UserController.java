@@ -14,13 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.WebUtils;
-import sharingcalender.front.annotation.RedirectByException;
 import sharingcalender.front.dto.TokenIssueResponseDto;
 import sharingcalender.front.dto.user.request.UserLoginRequestDto;
 import sharingcalender.front.dto.user.request.UserRegisterRequestDto;
 import sharingcalender.front.exception.BadRequestException;
-import sharingcalender.front.exception.ResourceNotFoundException;
-import sharingcalender.front.exception.UnAuthorizedException;
 import sharingcalender.front.service.TokenService;
 import sharingcalender.front.service.UserService;
 
@@ -47,12 +44,7 @@ public class UserController {
             throw new BadRequestException("Register User Data Is Not Valid");
         }
 
-        try {
-            userService.registerUser(userRegisterReq);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        userService.registerUser(userRegisterReq);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -95,7 +87,6 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 
 
 }

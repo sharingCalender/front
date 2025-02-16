@@ -115,6 +115,10 @@
     <script src="/js/sb-admin-2.min.js"></script>
 
 <script th:inline="javascript">
+
+    const _csrf = document.querySelector(`meta[name="_csrf"]`).getAttribute('content');
+    const _csrf_header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
     document.getElementById("register").addEventListener("submit",function (event) {
         event.preventDefault();
 
@@ -162,9 +166,9 @@
             return;
         }
 
-        const mobileNum = mobile.replace('-','')
-        console.log("mobileNum = "+mobileNum);
-        if (isNaN(mobileNum) || mobileNum.length < 12) {
+        const mobileNum = mobile.replaceAll('-','')
+
+        if (!/^\d+$/.test(mobileNum) || mobileNum.length < 11) {
             alert("휴대폰 번호를 올바르게 입력해주세요");
             return;
         }
@@ -185,13 +189,11 @@
         .then(response =>{
             if (response.ok) {
                 window.location.href = "/user/login";
-            } else{
-                return response.json();
-            }
-        })
-        .then(data =>{
-            if (data && data.message){
-                alert(data.message);
+            } else if (response.status == 409) {
+                alert("아이디가 이미 존재합니다.")
+            } else {
+                console.log(response.status);
+                throw new Error("다시 시도해주세요");
             }
         })
         .catch(error =>{

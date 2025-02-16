@@ -26,10 +26,14 @@ import sharingcalender.front.dto.calendar.request.EventChangeColorRequestDto;
 import sharingcalender.front.dto.calendar.request.EventDeleteRequestDto;
 import sharingcalender.front.dto.calendar.request.EventModifyRequestDto;
 import sharingcalender.front.dto.calendar.request.EventRegisterRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationAcceptRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
+import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
 import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
 import sharingcalender.front.dto.calendar.response.EventInfoResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
+import sharingcalender.front.dto.calendar.response.GroupInvitationInfo;
 import sharingcalender.front.exception.BadRequestException;
 import sharingcalender.front.service.CalendarService;
 
@@ -41,8 +45,7 @@ public class CalendarController {
     private final CalendarService calendarService;
 
     @GetMapping("/group")
-    public String getGroupInfoList(Model model,HttpServletResponse response) {
-
+    public String getGroupInfoList(Model model, HttpServletResponse response) {
 
         CalendarGroupListResponseDto groupInfoList = calendarService.getGroupInfoList();
 
@@ -110,7 +113,6 @@ public class CalendarController {
         long decodedCalendarGroupId = Long.parseLong(new String(Base64.getUrlDecoder()
             .decode(URLDecoder.decode(calendarGroupId, StandardCharsets.UTF_8))));
 
-
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Expires", "0");
@@ -125,15 +127,16 @@ public class CalendarController {
 
     @GetMapping("/events")
     public ResponseEntity<List<EventInfoResponseDto>> getAllEventsInCalendar(
-        @RequestParam("calendarGroupId") String calendarGroupId, @RequestParam("start") String start,
+        @RequestParam("calendarGroupId") String calendarGroupId,
+        @RequestParam("start") String start,
         @RequestParam("end") String end) {
 
         if (Objects.isNull(calendarGroupId)) {
             throw new BadRequestException("Request Is Not Valid");
         }
         long decodedCalendarGroupId = Long.parseLong(new String(
-            Base64.getUrlDecoder().decode(URLDecoder.decode(calendarGroupId, StandardCharsets.UTF_8))));
-
+            Base64.getUrlDecoder()
+                .decode(URLDecoder.decode(calendarGroupId, StandardCharsets.UTF_8))));
 
         if (decodedCalendarGroupId < 0) {
             throw new BadRequestException("Request Is Not Valid");
@@ -159,8 +162,6 @@ public class CalendarController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(eventRegisterResponseDto);
     }
-
-
 
 
     @PatchMapping("/event")
@@ -204,6 +205,59 @@ public class CalendarController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @GetMapping("/group/invitation/list")
+    public ModelAndView getInvitationList() {
 
+        ModelAndView modelAndView = new ModelAndView("message-list");
 
+        List<GroupInvitationInfo> invitationList = calendarService.getInvitationList();
+
+        modelAndView.addObject("invitationList", invitationList);
+
+        return modelAndView;
+    }
+
+    @PostMapping("/group/invitation")
+    public ResponseEntity<Void> saveGroupInvitation(
+        @RequestBody GroupInvitationSaveRequestDto groupInvitationSaveRequestDto,
+        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException("Request Body Is Not Valid");
+        }
+
+        calendarService.saveGroupInvitation(groupInvitationSaveRequestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/group/invitation/accept")
+    public ResponseEntity<Void> saveWhenInvitationAccepted(
+        @RequestBody GroupInvitationAcceptRequestDto groupInvitationAcceptRequestDto,
+        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException("Request Body Is Not Valid");
+        }
+
+        calendarService.saveWhenInvitationAccepted(groupInvitationAcceptRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @DeleteMapping("/group/invitation")
+    public ResponseEntity<Void> deleteGroupInvitation(
+        @RequestBody GroupInvitationDelRequestDto groupInvitationDelRequestDto,
+        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestException("Request Body Is Not Valid");
+        }
+
+        calendarService.deleteGroupInvitation(groupInvitationDelRequestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
 }

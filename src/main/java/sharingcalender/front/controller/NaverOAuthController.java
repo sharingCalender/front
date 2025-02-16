@@ -45,8 +45,8 @@ public class NaverOAuthController {
     @RedirectByException(
         exception = {BadRequestException.class, UnAuthorizedException.class,
             AuthenticationException.class},
-        title = "login fail",
-        redirect = "/login")
+        title = "네이버 로그인 실패",
+        redirect = "/user/login")
     @GetMapping("/callback")
     public String naverGetToken(@RequestParam("code") String code,
         @RequestParam("state") String state, HttpServletResponse response) {

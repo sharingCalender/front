@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
 <head>
   <meta charset="UTF-8">
   <title>BeONE - 오류페이지</title>
@@ -15,14 +17,15 @@
 <body class="vh-100 d-flex justify-content-center align-items-center flex-column text-center">
 
 <img src="/img/logo.png" alt="BeONE Logo">
-<h1>서버에 오류가 발생했습니다.</h1>
+<h1 th:text="${title}">서버에 오류가 발생했습니다.</h1>
 <button type="button" id="home" class="btn btn-primary mt-3">
-  홈으로 돌아가기
+  돌아가기
 </button>
 
-<script>
+<script th:inline="javascript">
   document.getElementById("home").addEventListener("click", function (){
-    window.location.href="/";
+    window.location.href = /*[[${redirect}]]*/ "/";
+
   });
 </script>
 
