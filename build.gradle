@@ -39,6 +39,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.0'
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.5'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
