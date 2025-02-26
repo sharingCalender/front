@@ -28,6 +28,7 @@ ext {
 }
 
 dependencies {
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.3.0'
     implementation group: 'org.apache.commons', name: 'commons-lang3'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-security'
