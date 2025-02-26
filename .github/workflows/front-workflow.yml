@@ -35,8 +35,11 @@ jobs:
           push: true
           tags: ${{secrets.DOCKERHUB_USERNAME}}/front
           platforms: linux/amd64
+          build-args: |
+            SECRETS_USERNAME=${{secrets.username}}
+            SECRETS_PASSWORD=${{secrets.password}}
 
 
           
-
-
+            
+            
