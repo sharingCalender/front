@@ -95,6 +95,17 @@
         })
       })
 
+      document.querySelectorAll(".enter-chat-btn").forEach(button => {
+        button.addEventListener("click",function (event) {
+          event.stopPropagation();
+
+          selectedCalendarGroupId = button.closest("tr").getAttribute("data-calendar-group-id");
+
+          encodedSelectedCalendarGroupId = encodeURIComponent(btoa(selectedCalendarGroupId));
+          window.location.href = `/chat/enter?calendarGroupId=${encodedSelectedCalendarGroupId}`;
+        })
+      })
+
       document.getElementById("groupInvitationModal").addEventListener("submit", function (event) {
         event.preventDefault();
 
@@ -175,6 +186,7 @@
         <th scope="col">Group Name</th>
         <th scope="col">delete</th>
         <th scope="col">그룹초대</th>
+        <th scope="col">그룹채팅입장</th>
       </tr>
       </thead>
       <tbody>
@@ -193,6 +205,11 @@
         <td>
           <button type="button" id="invitation-group" class="btn btn-primary invitation-group-btn">
             그룹 초대하기
+          </button>
+        </td>
+        <td>
+          <button type="button" id="enter-chat" class="btn btn-primary enter-chat-btn">
+            채팅 입장하기
           </button>
         </td>
       </tr>

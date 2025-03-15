@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragment/default}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+
+>
+<head>
+  <title>채팅</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* 세로 중앙 정렬 */
+      justify-content: center; /* 가로 중앙에 배치 */
+      height: 80vh; /* 전체 화면 높이 */
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* 입력창과 버튼을 정렬 */
+      width: 50%;
+      bottom: 10px; /* 채팅창 하단에 고정 */
+      left: 0;
+      padding: 10px;
+      background: white;
+      border-top: 1px solid #ddd;
+      border-radius: 0 0 10px 10px;
+    }
+
+
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 60vh;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      padding: 10px;
+      gap: 5px; /* 메시지 간 간격 일정하게 유지 */
+      width: 50%;
+
+    }
+
+    .chat-message {
+      margin-bottom: 10px;
+    }
+
+
+    .sent, .received {
+      color: black; /* 글자색 검은색 유지 */
+      /*padding: 8px;*/
+      /*border-radius: 10px;*/
+      max-width: 40%; /* 최대 너비 설정 */
+      /*!*width: fit-content; !* 내용에 맞게 크기 조절 *!*!*/
+      /*word-wrap: break-word; !* 긴 단어 자동 줄바꿈 *!*/
+    }
+
+
+
+    .sent{
+      /*background-color: #EAEAEA;*/
+
+      align-self: flex-end; /* 보낸 메시지를 오른쪽 정렬 */
+    }
+
+    .received {
+      /*background-color: #DCF8C6;*/
+
+      align-self: flex-start; /* 보낸 메시지를 오른쪽 정렬 */
+    }
+
+    .sent .message{
+      padding: 8px;
+
+      border-radius: 10px;
+      width: fit-content; /* 내용에 맞게 크기 조절 */
+      /*max-width: 60%; !* 최대 너비 설정 *!*/
+
+
+      background-color: #EAEAEA;
+    }
+    .received .message{
+      padding: 8px;
+
+      border-radius: 10px;
+      width: fit-content; /* 내용에 맞게 크기 조절 */
+      /*max-width: 60%; !* 최대 너비 설정 *!*/
+
+
+      background-color: #DCF8C6;
+    }
+
+    .message-sender, .message-receiver {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .message span{
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+
+
+    textarea {
+      flex: 1; /* 가용 공간을 차지 */
+      height: 50px;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      resize: none;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 8px 12px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+  </style>
+</head>
+<body layout:fragment="content">
+
+  <div class="chat-container">
+    <h2 class="text-center" th:text="${groupName}">채팅</h2>
+    <div class="chat-box" id="chatBox">
+      <div th:each="msg : ${messages}" th:classappend="${msg.senderEmail == email} ? 'sent' : 'received'"
+           th:attr="data-message-id=${msg.messageId}">
+        <div th:classappend="${msg.senderEmail == email} ? 'message-sender' : 'message-receiver'">
+          <strong th:text="${msg.senderEmail == email} ? 'me' + ': '  : ${msg.name} + ': '"></strong><br>
+        </div>
+        <div class="message">
+          <span th:text="${msg.message}" ></span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="input-container">
+      <textarea id="messageInput" placeholder="메시지를 입력해주세요" rows="3"></textarea>
+      <button onclick="sendMessage()">전송</button>
+    </div>
+  </div>
+
+<script th:inline="javascript">
+  let name = [[${name}]];
+  let email = [[${email}]];
+  let roomId = [[${roomId}]];
+  let websocketURL = [[${websocketURL}]];
+  let stompClient = null;
+  let isLoading = false;
+  let pendingMessages = [];
+  let firstMessageId = null;
+  let lastMessageId = null;
+  let unReadMessageId = [[${unReadMessageId}]];
+  let hasMoreBeforeMessages = true; // 과거 메시지가 더 있는지 여부
+  let chatBox = document.getElementById("chatBox");
+  let isMyMessage = false;
+  let isLogout = false;
+
+  document.addEventListener("DOMContentLoaded",function () {
+    //TODO 안 읽은 부분으로 스크롤 이동하는 거 필요할듯
+
+    connectWebSocket();
+
+
+    let messages = chatBox.children; // 현재 채팅창에 있는 메시지 가져오기
+    if (messages.length > 0) {
+      firstMessageId = messages[0].dataset.messageId; // 가장 오래된 메시지
+      lastMessageId = messages[messages.length - 1].dataset.messageId; // 가장 최신 메시지
+    }
+
+    if (unReadMessageId !== 0) {
+      scrollToMessage(unReadMessageId);
+    } else if (unReadMessageId == 0) {
+      scrollToBottom();
+    }
+
+    addScrollEvent();
+    addMessageKeyDownEvent();
+
+    leavePageWhenLogout();
+
+  });
+
+  let isComposing = false;
+
+  function addMessageKeyDownEvent() {
+    let messageInput = document.getElementById("messageInput");
+
+    // 한글 조합 시작 시 플래그 설정
+    messageInput.addEventListener("compositionstart", function () {
+      isComposing = true;
+    });
+
+    // 한글 조합이 끝나면 플래그 해제
+    messageInput.addEventListener("compositionend", function () {
+      isComposing = false;
+    });
+
+    // 엔터 키 이벤트 처리 (IME 입력 중이 아닐 때만 실행)
+    messageInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && !isComposing) {
+        if (!event.shiftKey){
+          event.preventDefault();
+          sendMessage();
+        }
+      }
+    });
+  }
+
+  const throttleScrollUp = throttle(loadBeforeMessages,2000);
+
+  function addScrollEvent() {
+    chatBox.addEventListener("scroll",function (){
+      if (chatBox.scrollTop === 0) {
+        throttleScrollUp(firstMessageId);
+      }
+    })
+  }
+
+  function throttle(mainFunction,delay){
+
+    let timerFlag = false;
+
+    return function (...args)  {
+      if (!timerFlag) {
+        timerFlag = true;
+
+        mainFunction(...args);
+
+        setTimeout(() => {
+          timerFlag = false;
+        },delay);
+
+
+      }
+    };
+
+  }
+
+  function leavePageWhenLogout(){
+
+    const logoutBtn = document.getElementById("logout");
+
+    if (logoutBtn){
+      logoutBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        let data = JSON.stringify({chatRoomId: roomId});
+
+        fetch("/chat/leave",{
+          method: "POST",
+          headers: {"Content-Type":"application/json", [_csrf_header]: _csrf},
+          body: data,
+          keepalive: true
+        }).then(() => {
+
+          fetch("/user/logout",{
+            method: 'POST',
+            headers: {'Content-Type':'application/json', [_csrf_header]: _csrf}
+          })
+          .then((response) =>{
+            if (response.ok) {
+              console.log("leave chat page when logout");
+
+              isLogout = true;
+              window.location.href="/user/login";
+            } else {
+              throw new Error("로그아웃 중 문제가 발생했습니다.")
+            }
+          })
+          .catch((error) =>{
+            alert("로그아웃 중 문제가 발생했습니다.");
+            window.location.href="/"
+          })
+
+        })
+
+
+      },true);
+
+    }
+  }
+
+  function connectWebSocket() {
+    if (stompClient && stompClient.connected) return;
+
+    let sockJs = new SockJS(`http://${websocketURL}/connect`);
+    stompClient = Stomp.over(sockJs);
+
+    stompClient.connect({}, function() {
+      stompClient.subscribe(`/topic/${roomId}`, function (message) {
+        let msg = JSON.parse(message.body);
+        if (isLoading) {
+          pendingMessages.push(msg);
+        } else {
+          addMessageToChatBox(msg, "append");
+          if (isMyMessage){
+            scrollToBottom();
+            isMyMessage = false;
+          }
+        }
+
+      });
+      stompClient.subscribe(`/user/queue/errors/${roomId}`,function (errorMessage){
+        console.log("errorMessage : " + errorMessage);
+        alert("메시지 전송중에 오류가 발생했습니다.");
+      });
+    })
+  }
+
+  function sendMessage() {
+
+    let messageInput = document.getElementById("messageInput");
+    let messageText = messageInput.value.trim();
+
+    if (messageText === "") return;
+    console.log('입력된 메시지 : ' + messageText);
+
+    let message={
+      chatRoomId: roomId,
+      senderEmail: email,
+      message: messageText,
+      name: name
+    };
+
+    stompClient.send(`/publish/${roomId}`, {chatRoomId:roomId}, JSON.stringify(message));
+    messageInput.value = "";
+
+    isMyMessage = true;
+  }
+
+  async function loadBeforeMessages(beforeMessageId) {
+    console.log("loadBeforeMessages start");
+
+    if (!beforeMessageId || isLoading || !hasMoreBeforeMessages) {
+      console.log("not execute loadBeforeMessages");
+      return;
+    }
+
+
+    let preHeight = chatBox.scrollHeight;
+
+    let encodedRoomId = encodeURIComponent(btoa(roomId));
+    let encodedFirstMessageId = encodeURIComponent(btoa(firstMessageId));
+
+    let response = await axios.get(`/chat/scrollUp?roomId=${encodedRoomId}&messageId=${encodedFirstMessageId}`);
+    if (response.status !== 200) {
+      alert("메시지를 가져오는데 실패했습니다.")
+      return;
+    }
+
+    let messages = response.data.messages;
+
+
+    if (messages.length === 0) {
+      console.log("Loaded Messages Length is 0");
+
+      hasMoreBeforeMessages = false;
+
+      return;
+    }
+
+    firstMessageId = messages[messages.length - 1].messageId;
+    messages.forEach(msg => addMessageToChatBox(msg, "prepend"));
+    chatBox.scrollTop = chatBox.scrollHeight - preHeight;
+
+
+
+  }
+
+  // async function loadAfterMessages(afterMessageId) {
+  //   if (!afterMessageId || isLoading || !hasMoreAfterMessages) {
+  //     return;
+  //   }
+  //
+  //   console.log("--- loadAfterMessage ---")
+  //   isLoading = true;
+  //   let preHeight = chatBox.scrollHeight;
+  //
+  //   let encodedRoomId = encodeURIComponent(btoa(roomId));
+  //   let encodedLastMessageId = encodeURIComponent(btoa(lastMessageId));
+  //
+  //   let response = await axios.get(`/chat/scrollDown?roomId=${encodedRoomId}&messageId=${encodedLastMessageId}`);
+  //   if (response.status !== 200) {
+  //     alert("메시지를 가져오는데 실패했습니다.")
+  //     return;
+  //   }
+  //
+  //   let messages = response.data.messages;
+  //
+  //   if (messages.length === 0) {
+  //     hasMoreAfterMessages = false;
+  //     isLoading = false;
+  //
+  //     if (pendingMessages.length > 0) {
+  //       pendingMessages.forEach(msg => addMessageToChatBox(msg, "append"));
+  //       pendingMessages = [];
+  //     }
+  //
+  //     return;
+  //   }
+  //
+  //   lastMessageId = messages[messages.length - 1].messageId;
+  //   messages.forEach(msg => addMessageToChatBox(msg, "append"));
+  //   chatBox.scrollTop = chatBox.scrollHeight - preHeight;
+  //
+  //   isLoading = false;
+  //
+  //
+  //
+  // }
+
+
+  function addMessageToChatBox(msg, position) {
+
+    let div = document.createElement("div");
+    div.classList.add("chat-message", msg.senderEmail === email ? "sent" : "received");
+
+    let sender = document.createElement("strong");
+    sender.innerHTML = msg.senderEmail == email ? "me: " : msg.name + ": ";
+    console.log("msg name : " + msg.name);
+
+    let br = document.createElement("br");
+
+    let messageDiv = document.createElement("div");
+    messageDiv.classList.add("message");
+
+    let content = document.createElement("span");
+    content.innerHTML = msg.message;
+    messageDiv.appendChild(content);
+
+
+    div.appendChild(sender);
+    div.appendChild(br);
+    div.appendChild(messageDiv);
+
+    if (position === "prepend") {
+      chatBox.insertBefore(div, chatBox.firstChild);
+    } else {
+      chatBox.appendChild(div);
+    }
+
+  }
+
+  function scrollToBottom() {
+    chatBox.scrollTo({top: chatBox.scrollHeight, behavior: "smooth"})
+
+  }
+
+  function isAtBottom() {
+    return chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 5;
+
+  }
+
+
+  function scrollToMessage(messageId) {
+    let targetMessage = document.querySelector(`[data-message-id='${messageId}']`);
+    if (targetMessage) {
+      targetMessage.scrollIntoView({behavior:"smooth", block: "center"});
+    }
+  }
+
+
+  window.addEventListener("beforeunload", function (){
+    if (stompClient && stompClient.connected){
+      console.log("leave chat page")
+
+      if (isLogout == false){
+        console.log("leave chat page when not logout");
+        let data = JSON.stringify({chatRoomId: roomId});
+
+        fetch("/chat/leave",{
+          method: "POST",
+          headers: {"Content-Type":"application/json", [_csrf_header]: _csrf},
+          body: data,
+          keepalive: true
+        });
+      }
+
+
+
+
+      stompClient.unsubscribe(`/topic/${roomId}`);
+      stompClient.disconnect();
+
+
+    }
+
+
+  })
+
+
+</script>
+
+
+</body>
+</html>

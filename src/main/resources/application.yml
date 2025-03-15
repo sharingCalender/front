@@ -10,6 +10,8 @@ spring:
 
     import: optional:configserver:http://${username}:${password}@localhost:9000
 
+websocket:
+  url: localhost:8081
 
 ---
 spring:

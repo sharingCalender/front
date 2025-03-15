@@ -21,7 +21,7 @@ public class TokenExpirationCheckFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        System.out.println(requestURI);
+
 
         if (requestURI.startsWith("/vendor") || requestURI.startsWith("/css")
             || requestURI.startsWith("/img") || requestURI.startsWith("/js")) {
