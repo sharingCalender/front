@@ -300,7 +300,7 @@
   function connectWebSocket() {
     if (stompClient && stompClient.connected) return;
 
-    let sockJs = new SockJS(`http://${websocketURL}/connect`);
+    let sockJs = new SockJS(websocketURL);
     stompClient = Stomp.over(sockJs);
 
     stompClient.connect({}, function() {
