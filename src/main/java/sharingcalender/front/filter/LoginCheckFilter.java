@@ -20,6 +20,7 @@ public class LoginCheckFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         System.out.println("requestURI = " + requestURI);
+        System.out.println("request.getRequestURL() = " + request.getRequestURL());
 
         if (requestURI.startsWith("/calendar") || requestURI.equals("/user/logout")) {
             Cookie refreshToken = WebUtils.getCookie(request, "refreshToken");
