@@ -135,6 +135,7 @@
             btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 로그인 중...`;
             btn.disabled = true;
 
+
             fetch("/user/login", {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json', [_csrf_header]: _csrf},
@@ -143,15 +144,23 @@
             .then((response) => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-
+                console.log(response.status);
                 if (response.ok) {
                     console.log("login  response is ok")
                     window.location.href = "/";
+                    return null;
+
+                } else if (response.status === 401) {
+                    return response.json();
                 } else {
                     throw new Error("로그인에 실패했습니다. 다시 시도해주세요.");
                 }
-            })
-            .catch((error) => {
+
+            }).then(data =>{
+                if (data) {
+                    alert(data.message);
+                }
+            }).catch((error) => {
                 alert(error.message);
             })
 
