@@ -12,7 +12,6 @@ public class LoginStatusAdvice {
     @ModelAttribute
     public void setLoginStatus(HttpServletRequest request, Model model) {
 
-        System.out.println("request.getRequestURI() = " + request.getRequestURI());
         boolean isLoggedIn = (boolean) request.getAttribute("isLoggedIn");
 
         model.addAttribute("isLoggedIn", isLoggedIn);

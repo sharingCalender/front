@@ -7,9 +7,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
+@Slf4j
 public class LoginCheckFilter extends OncePerRequestFilter {
 
     @Override
@@ -19,17 +21,21 @@ public class LoginCheckFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        System.out.println("requestURI = " + requestURI);
+        log.info("RequestURI : {} . Method: {} ", requestURI, request.getMethod());
 
-        if (requestURI.startsWith("/calendar") || requestURI.equals("/user/logout")) {
-            Cookie refreshToken = WebUtils.getCookie(request, "refreshToken");
+        Cookie refreshToken = WebUtils.getCookie(request, "refreshToken");
+
+        if (requestURI.startsWith("/calendar") || requestURI.equals("/user/logout")
+            || requestURI.startsWith("/chat")) {
+
             if (Objects.isNull(refreshToken)) {
 
                 response.sendRedirect("/user/login");
                 return;
             }
-
         }
+
+        request.setAttribute("isLoggedIn", refreshToken != null);
 
         filterChain.doFilter(request, response);
 

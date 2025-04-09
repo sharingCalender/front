@@ -5,6 +5,7 @@ import feign.Response;
 import feign.codec.ErrorDecoder;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import sharingcalender.front.dto.MessageDto;
 import sharingcalender.front.exception.AlreadyExistException;
 import sharingcalender.front.exception.AuthenticationException;
@@ -12,6 +13,7 @@ import sharingcalender.front.exception.BadRequestException;
 import sharingcalender.front.exception.ResourceNotFoundException;
 import sharingcalender.front.exception.UnAuthorizedException;
 
+@Slf4j
 public class FeignErrorDecoder implements ErrorDecoder {
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -24,6 +26,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
         try (BufferedInputStream bi = new BufferedInputStream(response.body().asInputStream())) {
             messageDto = objectMapper.readValue(bi.readAllBytes(), MessageDto.class);
         } catch (IOException e) {
+            log.warn("Parsing Exception in FeignErrorDecoder Class :  ", e);
             throw new RuntimeException(e);
         }
 
