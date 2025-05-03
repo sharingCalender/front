@@ -304,10 +304,22 @@
     document.getElementById("deleteEvent").addEventListener("click",function (){
       if (selectedEvent) {
         if (confirm("해당 일정을 삭제하시겠습니까?")) {
+
           const eventId = document.getElementById("selectedEventId").value;
 
+          const calendarGroupId = document.getElementById("calendarGroupId").getAttribute("data-calendar-group-id");
+          const showedDate = calendar.getDate();
+          const firstDateOfMonth = formatDateTimeLocal(
+              new Date(showedDate.getFullYear(), showedDate.getMonth(), 1));
+
+
+
+
+
           const formData = {
-            eventId: eventId
+            eventId: eventId,
+            calendarGroupId: calendarGroupId,
+            firstDateOfMonth: firstDateOfMonth
           }
 
           fetch('/calendar/event', {
@@ -448,9 +460,8 @@
         backgroundColor: document.getElementById('selectedEventColor').value,
         borderColor: document.getElementById('selectedEventColor').value,
         description: document.getElementById('eventDescription').value || "내용 없음",
-        writer: document.getElementById('eventWriter').value || "알수 없음"
-
-
+        writer: document.getElementById('eventWriter').value || "알수 없음",
+        calendarGroupId: document.getElementById("calendarGroupId").getAttribute("data-calendar-group-id")
       };
 
 
