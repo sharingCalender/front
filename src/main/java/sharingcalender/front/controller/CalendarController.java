@@ -51,9 +51,7 @@ public class CalendarController {
 
         model.addAttribute("groupList", groupInfoList.groupInfoList());
 
-        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Expires", "0");
+        responseWithoutCache(response);
 
         return "group-list";
     }
@@ -100,22 +98,14 @@ public class CalendarController {
 
         ModelAndView mv = new ModelAndView("calendar");
 
-        String decodedName = new String(
-            Base64.getUrlDecoder().decode(URLDecoder.decode(name, StandardCharsets.UTF_8)),
-            StandardCharsets.UTF_8);
+        String decodedName = getDecodedParam(name);
 
-        String decodedGroupName = new String(
-            Base64.getUrlDecoder().decode(URLDecoder.decode(groupName, StandardCharsets.UTF_8)),
-            StandardCharsets.UTF_8);
+        String decodedGroupName = getDecodedParam(groupName);
 
-        long decodedCalendarId = Long.parseLong(new String(
-            Base64.getUrlDecoder().decode(URLDecoder.decode(calendarId, StandardCharsets.UTF_8))));
-        long decodedCalendarGroupId = Long.parseLong(new String(Base64.getUrlDecoder()
-            .decode(URLDecoder.decode(calendarGroupId, StandardCharsets.UTF_8))));
+        long decodedCalendarId = Long.parseLong(getDecodedParam(calendarId));
+        long decodedCalendarGroupId = Long.parseLong(getDecodedParam(calendarGroupId));
 
-        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Expires", "0");
+        responseWithoutCache(response);
 
         mv.addObject("name", decodedName);
         mv.addObject("groupName", decodedGroupName);
@@ -123,6 +113,18 @@ public class CalendarController {
         mv.addObject("calendarId", decodedCalendarId);
 
         return mv;
+    }
+
+    private static void responseWithoutCache(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+    }
+
+    private static String getDecodedParam(String name) {
+        return new String(
+            Base64.getUrlDecoder().decode(URLDecoder.decode(name, StandardCharsets.UTF_8)),
+            StandardCharsets.UTF_8);
     }
 
     @GetMapping("/events")
@@ -134,9 +136,7 @@ public class CalendarController {
         if (Objects.isNull(calendarGroupId)) {
             throw new BadRequestException("Request Is Not Valid");
         }
-        long decodedCalendarGroupId = Long.parseLong(new String(
-            Base64.getUrlDecoder()
-                .decode(URLDecoder.decode(calendarGroupId, StandardCharsets.UTF_8))));
+        long decodedCalendarGroupId = Long.parseLong(getDecodedParam(calendarGroupId));
 
         if (decodedCalendarGroupId < 0) {
             throw new BadRequestException("Request Is Not Valid");
