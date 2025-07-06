@@ -47,6 +47,7 @@
 
 <div id="calendarGroupId" style="display: none" th:attr="data-calendar-group-id=${calendarGroupId}"></div>
 <div id="calendarId" style="display: none" th:attr="data-calendar-id=${calendarId}"></div>
+<div id="groupName" style="display: none" th:attr="data-group-name=${groupName}"></div>
 
 <div class="container mt-5">
   <h1 class="text-center text-primary" th:text="${groupName}"></h1>
@@ -457,11 +458,12 @@
         start: document.getElementById('eventStartDate').value,
         end: document.getElementById('eventEndDate').value || document.getElementById(
             'eventStartDate').value,
-        backgroundColor: document.getElementById('selectedEventColor').value,
-        borderColor: document.getElementById('selectedEventColor').value,
+        backgroundColor: document.getElementById('selectedEventColor').value || "#3357ff",
+        borderColor: document.getElementById('selectedEventColor').value || "#3357ff",
         description: document.getElementById('eventDescription').value || "내용 없음",
         writer: document.getElementById('eventWriter').value || "알수 없음",
-        calendarGroupId: document.getElementById("calendarGroupId").getAttribute("data-calendar-group-id")
+        calendarGroupId: document.getElementById("calendarGroupId").getAttribute("data-calendar-group-id"),
+        groupName: document.getElementById("groupName").getAttribute("data-group-name")
       };
 
 
