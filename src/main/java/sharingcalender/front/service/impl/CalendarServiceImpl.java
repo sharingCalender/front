@@ -16,6 +16,7 @@ import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
 import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
 import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
+import sharingcalender.front.dto.calendar.response.EventListResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
 import sharingcalender.front.dto.calendar.response.GroupInvitationInfo;
 import sharingcalender.front.service.CalendarService;
@@ -44,7 +45,7 @@ public class CalendarServiceImpl implements CalendarService {
 
     }
 
-    public CalendarLookUpResponseDto getAllEventsInCalendar(long calendarGroupId, String start,
+    public EventListResponseDto getAllEventsInCalendar(long calendarGroupId, String start,
         String end) {
 
         return calendarAdapter.getAllEventsInCalendar(calendarGroupId, start, end).getBody();
