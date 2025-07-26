@@ -20,6 +20,7 @@ import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
 import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
 import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
+import sharingcalender.front.dto.calendar.response.EventListResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
 import sharingcalender.front.dto.calendar.response.GroupInvitationInfoListResponseDto;
 
@@ -38,7 +39,7 @@ public interface CalendarAdapter {
         @RequestBody CalendarGroupDeleteRequestDto calendarGroupDeleteRequestDto);
 
     @GetMapping("/api/calendar/event")
-    ResponseEntity<CalendarLookUpResponseDto> getAllEventsInCalendar(
+    ResponseEntity<EventListResponseDto> getAllEventsInCalendar(
         @RequestParam("calendarGroupId") long calendarGroupId, @RequestParam("start") String start,
         @RequestParam("end") String end);
 

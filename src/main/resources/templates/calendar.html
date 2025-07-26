@@ -319,7 +319,8 @@
           const formData = {
             eventId: eventId,
             calendarGroupId: calendarGroupId,
-            firstDateOfMonth: firstDateOfMonth
+            firstDateOfMonth: firstDateOfMonth,
+
           }
 
           fetch('/calendar/event', {
@@ -366,7 +367,9 @@
           title: title,
           start: start,
           end: end,
-          description: description
+          description: description,
+          calendarGroupId: document.getElementById("calendarGroupId").getAttribute("data-calendar-group-id")
+
         }
 
         fetch('/calendar/event',{
@@ -413,7 +416,9 @@
           body: JSON.stringify({
             eventId: selectedEvent.id,
             backgroundColor: newColor,
-            borderColor: newColor
+            borderColor: newColor,
+            calendarGroupId: document.getElementById("calendarGroupId").getAttribute("data-calendar-group-id")
+
           })
         })
         .then(response => {

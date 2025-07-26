@@ -12,6 +12,7 @@ import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
 import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
 import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
+import sharingcalender.front.dto.calendar.response.EventListResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
 import sharingcalender.front.dto.calendar.response.GroupInvitationInfo;
 
@@ -23,7 +24,7 @@ public interface CalendarService {
 
     void deleteGroup(CalendarGroupDeleteRequestDto calendarGroupDeleteReq);
 
-    CalendarLookUpResponseDto getAllEventsInCalendar(long calendarGroupId, String start,
+    EventListResponseDto getAllEventsInCalendar(long calendarGroupId, String start,
         String end);
 
     EventRegisterResponseDto registerEvent(EventRegisterRequestDto eventRegisterRequestDto);

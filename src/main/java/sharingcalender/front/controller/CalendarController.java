@@ -30,8 +30,8 @@ import sharingcalender.front.dto.calendar.request.GroupInvitationAcceptRequestDt
 import sharingcalender.front.dto.calendar.request.GroupInvitationDelRequestDto;
 import sharingcalender.front.dto.calendar.request.GroupInvitationSaveRequestDto;
 import sharingcalender.front.dto.calendar.response.CalendarGroupListResponseDto;
-import sharingcalender.front.dto.calendar.response.CalendarLookUpResponseDto;
 import sharingcalender.front.dto.calendar.response.EventInfoResponseDto;
+import sharingcalender.front.dto.calendar.response.EventListResponseDto;
 import sharingcalender.front.dto.calendar.response.EventRegisterResponseDto;
 import sharingcalender.front.dto.calendar.response.GroupInvitationInfo;
 import sharingcalender.front.exception.BadRequestException;
@@ -142,10 +142,10 @@ public class CalendarController {
             throw new BadRequestException("Request Is Not Valid");
         }
 
-        CalendarLookUpResponseDto allEventsInCalendar = calendarService.getAllEventsInCalendar(
+        EventListResponseDto allEventsInCalendar = calendarService.getAllEventsInCalendar(
             decodedCalendarGroupId, start, end);
 
-        return ResponseEntity.status(HttpStatus.OK).body(allEventsInCalendar.eventInfo());
+        return ResponseEntity.status(HttpStatus.OK).body(allEventsInCalendar.eventList());
 
     }
 
