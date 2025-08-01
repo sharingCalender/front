@@ -33,7 +33,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{secrets.DOCKERHUB_USERNAME}}/calendar
+          images: ${{secrets.DOCKERHUB_USERNAME}}/front
           tags: type=ref,event=tag
 
       - name: Build and Push

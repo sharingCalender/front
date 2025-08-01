@@ -9,36 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import sharingcalender.front.adapter.AuthAdapter;
 import sharingcalender.front.annotation.RedirectByException;
-import sharingcalender.front.dto.oauth.request.NaverTokenRequestDto;
+import sharingcalender.front.dto.oauth.request.GetOauthUriRequestDto;
+import sharingcalender.front.dto.oauth.request.OauthTokenRequestDto;
 import sharingcalender.front.dto.TokenIssueResponseDto;
 import sharingcalender.front.exception.AuthenticationException;
 import sharingcalender.front.exception.BadRequestException;
 import sharingcalender.front.exception.UnAuthorizedException;
+import sharingcalender.front.service.OauthService;
 import sharingcalender.front.service.TokenService;
-import sharingcalender.front.service.impl.NaverServiceImpl;
+import sharingcalender.front.service.impl.OauthServiceImpl;
 
 @Controller
-@RequestMapping("/oauth/naver")
+@RequestMapping("/oauth")
 @RequiredArgsConstructor
-public class NaverOAuthController {
+public class OAuthController {
 
-    private final AuthAdapter authAdapter;
-
-    private final NaverServiceImpl naverService;
+    private final OauthService oauthService;
 
     private final TokenService tokenService;
 
-    @Value("${spring.jwt.token.access-expiration-time}")
-    private long accessExpirationTime;
-
-    @Value("${spring.jwt.token.refresh-expiration-time}")
-    private long refreshExpirationTime;
-
-
+    private static final String PROVIDER_NAVER = "NAVER";
 
     @GetMapping("/login")
-    public String naverOauthLogin() {
-        return naverService.naverOauthLogin();
+    public String oauthLogin(@RequestParam("provider") String provider) {
+        return oauthService.oauthLogin(new GetOauthUriRequestDto(provider));
     }
 
     //TODO 로그인 실패페이지로 리디렉션
@@ -47,15 +41,13 @@ public class NaverOAuthController {
             AuthenticationException.class},
         title = "네이버 로그인 실패",
         redirect = "/user/login")
-    @GetMapping("/callback")
+    @GetMapping("/naver/callback")
     public String naverGetToken(@RequestParam("code") String code,
         @RequestParam("state") String state, HttpServletResponse response) {
 
-        TokenIssueResponseDto tokenResponse = naverService.naverGetToken(
-            new NaverTokenRequestDto(code, state));
+        TokenIssueResponseDto tokenResponse = oauthService.getOauthToken(
+            new OauthTokenRequestDto(code, state, PROVIDER_NAVER));
 
-        // auth 에서 네이버 접근토큰 발급받고 우리서버에서 이용할 jwt 토큰을 여기로 반환하면
-        // 여기서 쿠키에 넣어서 응답하면 될 거 같다.
         tokenService.addTokenToCookie(tokenResponse, response);
 
         return "redirect:/";

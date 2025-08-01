@@ -2,10 +2,12 @@ package sharingcalender.front.dto.oauth.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record NaverTokenRequestDto(
+public record OauthTokenRequestDto(
     @NotBlank
     String code,
 
     @NotBlank
-    String state
+    String state,
+
+    String provider
 ){}
